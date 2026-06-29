@@ -59,7 +59,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 pip install -r requirements.txt
 pre-commit install
 
-# Lint / format
+# Lint /e format
 ruff check . --fix
 black .
 isort .
@@ -120,8 +120,10 @@ POST /predict
 ```
 data/raw/statcast_{year}.parquet       ← ml/ingest.py
 data/processed/labeled.parquet         ← ml/labels.py + ml/features.py
+data/processed/labeled_bip.parquet     ← ml/labels.py (in-play subset)
 data/processed/arsenal.parquet         ← ml/arsenal.py
 data/processed/usage.parquet           ← ml/arsenal.py
+data/processed/pitcher_woba.parquet    ← ml/arsenal.py (pitcher wOBA-against tier lookup)
 ml/artifacts/preprocessor.joblib       ← ml/features.py (fit on train split)
 ml/artifacts/pitch_outcome_model.joblib ← ml/train_pitch_outcome.py
 ml/artifacts/bip_model.joblib          ← ml/train_bip_outcome.py

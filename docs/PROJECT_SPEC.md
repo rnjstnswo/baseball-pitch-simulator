@@ -111,6 +111,14 @@ Keeping them separate maintains class balance in each model and allows independe
 **Input:** Same feature set as Model 1, filtered to `in_play` rows only.
 **Output:** Softmax probability vector over the 5 classes above.
 
+### Label Mapping Notes (Phase 2)
+
+- **Model 1 `description` → label** (gaps resolved during Phase 1 EDA):
+  - `automatic_ball` → `ball`; `automatic_strike` → `called_strike` (pitch-clock auto calls).
+  - `foul_tip` and `bunt_foul_tip` → `foul` (contact was made).
+- **Model 2 `events` → label:** every in-play event not in {single, double, triple, home_run} maps to `out`. This includes `field_error` (reached on error — no hit credited) and the negligible `catcher_interf` (~35 rows/season).
+- **wOBA tiers** are computed from Statcast `woba_value` / `woba_denom`: season wOBA = Σ`woba_value` / Σ`woba_denom` over a player's plate-appearance rows, grouped by `(player, season)`, then bucketed via the §5 thresholds. Batter tier is user-supplied at inference; **pitcher wOBA-against tier is served from `data/processed/pitcher_woba.parquet`.**
+
 ### Inference Chain
 
 ```

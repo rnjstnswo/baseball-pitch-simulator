@@ -31,4 +31,4 @@ line_length = 88
 # ── pytest ─────────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["api/tests"]
+testpaths = ["api/tests", "ml/tests"]
