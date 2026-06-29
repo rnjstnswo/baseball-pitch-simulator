@@ -77,11 +77,15 @@ def load_usage(output_dir: Path = PROCESSED_DIR) -> pd.DataFrame:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Precompute arsenal and usage tables")
-    parser.add_argument("--input", type=Path, required=True, help="Path to labeled Parquet")
+    parser.add_argument(
+        "--input", type=Path, required=True, help="Path to labeled Parquet"
+    )
     parser.add_argument("--output-dir", type=Path, default=PROCESSED_DIR)
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+    )
 
     df = pd.read_parquet(args.input)
     arsenal_df = build_arsenal_table(df)

@@ -25,6 +25,7 @@ ARTIFACTS_DIR = Path(__file__).parent.parent / "ml" / "artifacts"
 @dataclass
 class ModelBundle:
     """Container for all loaded artifacts needed at inference time."""
+
     pitch_outcome_model: object
     bip_model: object
     preprocessor: object
@@ -87,6 +88,8 @@ def _build_feature_row(request: PredictRequest, bundle: ModelBundle) -> pd.DataF
     raise NotImplementedError
 
 
-def _compute_updated_state(request: PredictRequest, pitch_prediction: str, bip_prediction: str | None) -> dict:
+def _compute_updated_state(
+    request: PredictRequest, pitch_prediction: str, bip_prediction: str | None
+) -> dict:
     """Determine the resulting count / base / out state after the pitch."""
     raise NotImplementedError

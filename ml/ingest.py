@@ -101,9 +101,17 @@ def _pull_single_year(year: int) -> pd.DataFrame:
         start_date = f"{year}-{start_md}"
         end_date = f"{year}-{end_md}"
         try:
-            chunk = pybaseball.statcast(start_dt=start_date, end_dt=end_date, verbose=False)
+            chunk = pybaseball.statcast(
+                start_dt=start_date, end_dt=end_date, verbose=False
+            )
         except Exception as exc:
-            logger.warning("Year %d %s–%s: fetch failed (%s), skipping", year, start_md, end_md, exc)
+            logger.warning(
+                "Year %d %s–%s: fetch failed (%s), skipping",
+                year,
+                start_md,
+                end_md,
+                exc,
+            )
             continue
         if chunk is not None and not chunk.empty:
             frames.append(chunk)
@@ -140,5 +148,7 @@ if __name__ == "__main__":
     parser.add_argument("--force-refresh", action="store_true")
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+    )
     pull_statcast(args.start_year, args.end_year, args.force_refresh)

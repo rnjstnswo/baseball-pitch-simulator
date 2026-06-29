@@ -59,10 +59,14 @@ async def get_arsenal(pitcher_id: int):
 
 
 @app.get("/pitchers/{pitcher_id}/usage")
-async def get_usage(pitcher_id: int, pitch_type: str | None = None, count: str | None = None):
+async def get_usage(
+    pitcher_id: int, pitch_type: str | None = None, count: str | None = None
+):
     raise NotImplementedError
 
 
 @app.post("/predict")
-async def predict(request: object):  # replace `object` with PredictRequest from schemas.py
+async def predict(
+    request: object,
+):  # replace `object` with PredictRequest from schemas.py
     raise NotImplementedError

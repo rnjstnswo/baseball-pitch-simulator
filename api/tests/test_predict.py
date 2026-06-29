@@ -43,7 +43,9 @@ def test_valid_predict_returns_200():
     data = response.json()
     assert "pitch_outcome" in data
     assert "probabilities" in data["pitch_outcome"]
-    assert sum(data["pitch_outcome"]["probabilities"].values()) == pytest.approx(1.0, abs=1e-3)
+    assert sum(data["pitch_outcome"]["probabilities"].values()) == pytest.approx(
+        1.0, abs=1e-3
+    )
 
 
 @pytest.mark.skip(reason="Not implemented — Phase 4")

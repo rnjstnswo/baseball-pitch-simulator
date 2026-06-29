@@ -51,7 +51,14 @@ BIP_OUTCOME_MAP: dict[str, str] = {
     # everything else is "out"
 }
 
-PITCH_OUTCOME_CLASSES = ["ball", "called_strike", "swinging_strike", "foul", "in_play", "hit_by_pitch"]
+PITCH_OUTCOME_CLASSES = [
+    "ball",
+    "called_strike",
+    "swinging_strike",
+    "foul",
+    "in_play",
+    "hit_by_pitch",
+]
 BIP_OUTCOME_CLASSES = ["out", "single", "double", "triple", "home_run"]
 
 

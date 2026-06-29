@@ -82,17 +82,23 @@ def evaluate(model: object, X: pd.DataFrame, y: pd.Series) -> dict[str, float]:
     raise NotImplementedError
 
 
-def serialize(model: object, preprocessor: object, output_dir: Path = ARTIFACTS_DIR) -> None:
+def serialize(
+    model: object, preprocessor: object, output_dir: Path = ARTIFACTS_DIR
+) -> None:
     """Save model and preprocessor to output_dir with joblib."""
     raise NotImplementedError
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Model 1: Pitch Outcome")
-    parser.add_argument("--input", type=Path, required=True, help="Path to labeled Parquet")
+    parser.add_argument(
+        "--input", type=Path, required=True, help="Path to labeled Parquet"
+    )
     parser.add_argument("--output-dir", type=Path, default=ARTIFACTS_DIR)
     parser.add_argument("--n-trials", type=int, default=50)
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+    )
     logger.info("Training pitch outcome model — not yet implemented.")

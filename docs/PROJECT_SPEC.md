@@ -93,7 +93,7 @@ Keeping them separate maintains class balance in each model and allows independe
 | `in_play` | Batted ball put in play (any result) |
 | `hit_by_pitch` | Batter struck by pitch |
 
-**Input:** All features in §4.  
+**Input:** All features in §4.
 **Output:** Softmax probability vector over the 6 classes above.
 
 ### Model 2 — Ball-in-Play Outcome Classifier
@@ -108,7 +108,7 @@ Keeping them separate maintains class balance in each model and allows independe
 | `triple` | Triple |
 | `home_run` | Home run |
 
-**Input:** Same feature set as Model 1, filtered to `in_play` rows only.  
+**Input:** Same feature set as Model 1, filtered to `in_play` rows only.
 **Output:** Softmax probability vector over the 5 classes above.
 
 ### Inference Chain
@@ -468,7 +468,7 @@ Liveness check for the API.
 - [x] Set up `pyproject.toml` (black, ruff, isort), `.pre-commit-config.yaml`, `.gitignore`.
 - [x] Decide and document outcome taxonomy (§3).
 - [x] Freeze `/predict` contract (§6).
-- [ ] Initialize git, push to GitHub.
+- [x] Initialize git, push to GitHub.
 
 **Exit Criteria:**
 - `pre-commit run --all-files` passes on all stub files.

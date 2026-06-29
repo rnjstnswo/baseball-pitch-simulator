@@ -81,10 +81,14 @@ def serialize(model: object, output_dir: Path = ARTIFACTS_DIR) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Model 2: Ball-in-Play Outcome")
-    parser.add_argument("--input", type=Path, required=True, help="Path to labeled in-play Parquet")
+    parser.add_argument(
+        "--input", type=Path, required=True, help="Path to labeled in-play Parquet"
+    )
     parser.add_argument("--output-dir", type=Path, default=ARTIFACTS_DIR)
     parser.add_argument("--n-trials", type=int, default=50)
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
+    )
     logger.info("Training BIP outcome model — not yet implemented.")

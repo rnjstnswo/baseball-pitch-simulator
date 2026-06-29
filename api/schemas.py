@@ -37,15 +37,23 @@ class BatterQualityTier(str, Enum):
 class PredictRequest(BaseModel):
     pitcher_id: int = Field(..., description="MLB MLBAM pitcher ID")
     pitch_type: str = Field(..., description="Pitch type code (e.g. FF, SL, CH)")
-    plate_x: float = Field(..., ge=-2.0, le=2.0, description="Horizontal location (feet from center)")
-    plate_z: float = Field(..., ge=0.5, le=5.0, description="Vertical location (feet from ground)")
-    batter_hand: str = Field(..., pattern="^[LR]$", description="Batter handedness: L or R")
+    plate_x: float = Field(
+        ..., ge=-2.0, le=2.0, description="Horizontal location (feet from center)"
+    )
+    plate_z: float = Field(
+        ..., ge=0.5, le=5.0, description="Vertical location (feet from ground)"
+    )
+    batter_hand: str = Field(
+        ..., pattern="^[LR]$", description="Batter handedness: L or R"
+    )
     batter_quality_tier: BatterQualityTier
     balls: int = Field(..., ge=0, le=3)
     strikes: int = Field(..., ge=0, le=2)
     outs: int = Field(..., ge=0, le=2)
     inning: int = Field(..., ge=1, le=12)
-    score_diff: int = Field(..., ge=-10, le=10, description="Batter team score − pitcher team score")
+    score_diff: int = Field(
+        ..., ge=-10, le=10, description="Batter team score − pitcher team score"
+    )
     on_1b: bool
     on_2b: bool
     on_3b: bool
