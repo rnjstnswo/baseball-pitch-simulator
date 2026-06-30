@@ -654,28 +654,47 @@ Liveness check for the API.
 - Per-pitch-type breakdown of Model 1 performance.
 - Per-count-state breakdown of Model 1 performance.
 
-### Results Table (to be filled in Phase 3)
+### Results Table
+
+> Metrics on the held-out **2024 test split**. Model is **LightGBM**. Tuned with
+> Optuna (30 trials, validation log-loss objective), calibrated with isotonic
+> `CalibratedClassifierCV` on the 2023 validation split. Natural base rates
+> (no class weighting) so calibrated probabilities reflect true frequencies.
 
 #### Model 1 — Pitch Outcome
 
 | Model | Log-loss | Macro-F1 | ECE |
 |---|---|---|---|
-| Majority-class dummy | — | — | — |
-| Logistic Regression (baseline) | — | — | — |
-| Single Decision Tree (baseline) | — | — | — |
-| XGBoost / LightGBM (tuned) | — | — | — |
-| XGBoost / LightGBM + Calibration | — | — | **target < 0.05** |
+| Majority-class dummy | 1.5488 | 0.0872 | 0.0007 |
+| Logistic Regression (baseline) | 1.1126 | 0.3497 | 0.0126 |
+| Single Decision Tree (baseline) | 1.1261 | 0.3306 | 0.0456 |
+| LightGBM (tuned) | 0.6749 | 0.6498 | 0.0125 |
+| LightGBM + Calibration | **0.6742** | **0.6548** | **0.0179** |
+
+Tuned model beats logistic on log-loss (0.6749 vs 1.1126 ✓); calibrated ECE 0.0179 < 0.05 ✓.
 
 #### Model 2 — Ball-in-Play Outcome
 
 | Model | Log-loss | Macro-F1 | ECE |
 |---|---|---|---|
-| Majority-class dummy | — | — | — |
-| Logistic Regression (baseline) | — | — | — |
-| Single Decision Tree (baseline) | — | — | — |
-| XGBoost / LightGBM (tuned) | — | — | — |
-| XGBoost / LightGBM + Calibration | — | — | **target < 0.05** |
+| Majority-class dummy | 0.9320 | 0.1616 | 0.0021 |
+| Logistic Regression (baseline) | 0.9162 | 0.1616 | 0.0027 |
+| Single Decision Tree (baseline) | 0.9591 | 0.1682 | 0.0088 |
+| LightGBM (tuned) | 0.9104 | 0.1682 | 0.0029 |
+| LightGBM + Calibration | **0.9091** | **0.1631** | **0.0028** |
+
+Tuned model beats logistic on log-loss (0.9104 vs 0.9162 ✓); calibrated ECE 0.0028 < 0.05 ✓.
+The margin over the dummy (0.9320) is small: batted-ball outcome is inherently
+low-signal from pre-contact features alone (exit velocity / launch angle are
+deliberately excluded as leakage), so top-1 prediction collapses to the majority
+class ("out") and macro-F1 on the rare classes (triple, home_run) stays low.
+This is an accepted MVP limitation (see §10). The model is nonetheless retained
+because its **calibrated probabilities are fit for the app's purpose**: predicted
+means match true base rates and vary widely by situation (e.g. P(home_run)
+ranges 0–0.78, P(out) ranges 0.11–0.87), which is what the result panel displays.
+`class_weight="balanced"` was tested and rejected — isotonic calibration undoes
+the reweighting, leaving the same argmax and slightly worse log-loss (0.9143).
 
 ---
 
-*Last updated: Phase 0 — Foundation*
+*Last updated: Phase 3 — Modeling*
