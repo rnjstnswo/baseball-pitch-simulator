@@ -256,4 +256,54 @@ update — `wsl --update` — before Docker Desktop's engine would start.)
 
 ---
 
-*Last updated: Phase 4 — Backend API complete — 2026-07-02*
+## Phase 5 — Frontend
+
+**Status:** Complete. Full §2 user flow works end-to-end in the browser against
+the live API; `tsc -b` clean; zone-click accuracy verified within ±0.05 ft.
+
+**Goal:** Interactive React/TypeScript UI per spec Phase 5: pitcher search,
+batter config, situation panel, arsenal-driven pitch selector, clickable SVG
+strike zone, prediction results with charts.
+
+**Setup:** Node.js 24.18.0 LTS installed via winget (was absent from the
+machine). Scaffolded with `create-vite` (react-ts template), Vite 8 + React 19.
+Deps: `tailwindcss` + `@tailwindcss/vite` (v4 plugin path, no config file),
+`recharts`, `@tanstack/react-query`.
+
+**Structure (`frontend/src/`):**
+
+| File | Role |
+|---|---|
+| `api/types.ts` | TS mirrors of every Pydantic schema (frozen §6 contract noted) |
+| `api/client.ts` | fetch wrapper over `VITE_API_URL` (default `http://localhost:8000`), `ApiError` with FastAPI `detail` |
+| `api/hooks.ts` | TanStack Query hooks: `usePitchers` / `useArsenal` / `useUsage` / `usePredict` (mutation) |
+| `components/ButtonGroup.tsx` | shared segmented single-select row |
+| `components/PitcherSelector.tsx` | search combobox, client-side filter, first 50 matches |
+| `components/BatterPanel.tsx` | L/R + wOBA tier button groups |
+| `components/SituationPanel.tsx` | count/outs button groups, inning select (1–12), score-diff input (clamped ±10), runner toggles |
+| `components/PitchTypeSelector.tsx` | arsenal buttons with usage % + avg velo |
+| `components/StrikeZone.tsx` | SVG spanning the full valid range (x ±2, z 0.5–5); zone rect at rulebook width and the API's `LEAGUE_SZ_TOP/BOT`; click mapped screen→feet via inverse `getScreenCTM` |
+| `components/ProbabilityChart.tsx` | Recharts horizontal bars, single hue, sorted desc, % labels at tips |
+| `components/ResultsPanel.tsx` | headline prediction, both charts (BIP conditional), SHAP explanation, usage sentence, updated state line |
+| `App.tsx` | all state (`useState`), predict fires on zone click; 3-column grid at `lg:` |
+
+**Design decisions:**
+- Predict fires on zone click only (re-click to re-predict); pitcher change
+  resets pitch type, location, and the previous result.
+- Charts follow the dataviz method: single measure → one hue (`#2a78d6`,
+  validated), no legend, ≤24px bars with 4px rounded data-ends, hairline grid,
+  values at bar tips in ink (not series color).
+- Strike zone drawn at the exact league-median vertical bounds the model
+  assumes, so what the user sees matches what the model is told.
+- No server-side `?search=` — the full pitcher list is one fetch; filtering is
+  client-side.
+
+**Verified (Playwright vs system Edge, headless):** full flow — search "Gerrit"
+→ select Cole → LHB/elite → 1-2 count, 1 out, runner on 1B → 4-Seam Fastball →
+zone click at (−0.5, 2.8) → readout (−0.49, 2.80) (±0.05 ft criterion) →
+prediction panel renders chart + explanation + usage + state; second click
+re-predicts; zero browser console errors. `tsc -b` passes. Screenshots reviewed.
+
+---
+
+*Last updated: Phase 5 — Frontend complete — 2026-07-02*

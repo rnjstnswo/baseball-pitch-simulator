@@ -1,16 +1,13 @@
 # Frontend
 
-The React + TypeScript frontend is scaffolded in Phase 5.
+The React + TypeScript frontend (Phase 5).
 
-## Setup (Phase 5)
-
-Run the following command from the **repo root** to scaffold the Vite app:
+## Setup
 
 ```bash
-npm create vite@latest frontend -- --template react-ts
 cd frontend
 npm install
-npm install tailwindcss @tailwindcss/vite recharts @tanstack/react-query
+npm run dev      # http://localhost:5173 (expects the API on :8000)
 ```
 
 ## Tech Stack
