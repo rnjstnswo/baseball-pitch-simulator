@@ -18,6 +18,9 @@ Classes:
     ArsenalEntry        — item in GET /pitchers/{id}/arsenal response
     UsageEntry          — item in GET /pitchers/{id}/usage response
     HealthResponse      — GET /health response
+    PitchersResponse    — GET /pitchers response wrapper
+    ArsenalResponse     — GET /pitchers/{id}/arsenal response wrapper
+    UsageResponse       — GET /pitchers/{id}/usage response wrapper
 """
 
 from __future__ import annotations
@@ -131,3 +134,19 @@ class HealthResponse(BaseModel):
     status: str
     model_loaded: bool
     version: str
+
+
+class PitchersResponse(BaseModel):
+    pitchers: list[PitcherSummary]
+
+
+class ArsenalResponse(BaseModel):
+    pitcher_id: int
+    full_name: str
+    season: int
+    arsenal: list[ArsenalEntry]
+
+
+class UsageResponse(BaseModel):
+    pitcher_id: int
+    usage_by_count: list[UsageEntry]

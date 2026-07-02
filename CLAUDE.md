@@ -110,7 +110,7 @@ POST /predict
 | `ml/ingest.py` | pybaseball pull → `data/raw/statcast_{year}.parquet`; deterministic, idempotent |
 | `ml/labels.py` | Map Statcast `description`/`events` to Model 1 and Model 2 label spaces |
 | `ml/features.py` | sklearn Pipeline (imputation, encoding, scaling) + chronological train/val/test split |
-| `ml/arsenal.py` | Precompute per-pitcher pitch stats and count-level usage → `data/processed/` |
+| `ml/arsenal.py` | Precompute per-pitcher pitch stats (incl. release/spin medians), count-level usage, wOBA tiers, and pitcher metadata → `data/processed/` |
 | `ml/train_pitch_outcome.py` | Baseline → XGBoost/LightGBM → calibration → serialize to `ml/artifacts/` |
 | `ml/train_bip_outcome.py` | Same pipeline, filtered to in-play rows only |
 | `ml/explain.py` | SHAP TreeExplainer → `top_factors()` → `to_plain_english()` |
@@ -124,6 +124,7 @@ data/processed/labeled_bip.parquet     ← ml/labels.py (in-play subset)
 data/processed/arsenal.parquet         ← ml/arsenal.py
 data/processed/usage.parquet           ← ml/arsenal.py
 data/processed/pitcher_woba.parquet    ← ml/arsenal.py (pitcher wOBA-against tier lookup)
+data/processed/pitchers.parquet        ← ml/arsenal.py (pitcher metadata: name/team/p_throws, for /pitchers + p_throws feature)
 ml/artifacts/preprocessor.joblib       ← ml/features.py (fit on train split)
 ml/artifacts/pitch_outcome_model.joblib ← ml/train_pitch_outcome.py
 ml/artifacts/bip_model.joblib          ← ml/train_bip_outcome.py

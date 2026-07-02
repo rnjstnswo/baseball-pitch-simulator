@@ -321,13 +321,13 @@ Content-Type: application/json
     "sample_size": 312
   },
   "updated_state": {
-    "balls": 1,
-    "strikes": 3,
-    "outs": 1,
+    "balls": 0,
+    "strikes": 0,
+    "outs": 2,
     "on_1b": true,
     "on_2b": false,
     "on_3b": false,
-    "at_bat_result": null
+    "at_bat_result": "strikeout"
   }
 }
 ```
@@ -347,7 +347,7 @@ Content-Type: application/json
 | `usage_context.pitch_usage_in_count_pct` | float | no | Usage % in this specific count |
 | `usage_context.count` | string | no | e.g. `"1-2"` |
 | `usage_context.sample_size` | int | no | Number of pitches in arsenal table for this count |
-| `updated_state` | object | no | Resulting game state after this pitch (strikes=3 → strikeout, etc.) |
+| `updated_state` | object | no | Resulting game state after this pitch. Terminal events resolve fully (strike 3 → strikeout with count reset + out; ball 4 → walk). Runner advancement is simplified (forced runners on walk/HBP; all runners advance by the hit's base count) — precise force/scoring rules are out of MVP scope (§10). |
 
 ---
 
@@ -538,7 +538,7 @@ Liveness check for the API.
 - Results table (§11) filled in for all models.
 - Tuned model beats logistic regression on log-loss for both Model 1 and Model 2.
 - Calibration curve (reliability diagram) shows ECE < 0.05 for both models.
-- SHAP explanations generate in < 200ms per prediction (precompute background dataset).
+- SHAP explanations generate in < 200ms per prediction (use TreeExplainer's `tree_path_dependent` path with no background dataset; passing an interventional background sample exceeds the budget by 3–8×).
 - All artifacts are serialized and loadable from a clean Python environment.
 
 ---
@@ -697,4 +697,4 @@ the reweighting, leaving the same argmax and slightly worse log-loss (0.9143).
 
 ---
 
-*Last updated: Phase 3 — Modeling*
+*Last updated: Phase 4 — Backend API (/predict contract v0.2.0)*

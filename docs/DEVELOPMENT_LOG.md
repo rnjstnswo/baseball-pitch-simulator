@@ -194,4 +194,66 @@ limitation (spec §10).
 
 ---
 
-*Last updated: Phase 3 — Modeling complete — 2026-06-30*
+---
+
+## Phase 4 — Backend API
+
+**Status:** Complete. Two-model inference chain served via FastAPI; all 5
+endpoints implemented; 11 API tests pass (29 total across the repo); lint-clean.
+Docker image builds and the container serves all endpoints (verified 2026-07-02).
+
+**Goal:** Expose both models via a production FastAPI service honoring the frozen
+`/predict` contract (spec §6) and the §7 endpoints. Exit criteria (spec §9):
+pytest passes; app boots; `/predict` returns a valid response; `/pitchers`,
+`/arsenal`, `/usage`, `/health` return expected schemas; Docker image builds.
+
+**Data-prep prerequisite discovered during planning:**
+The `/pitchers` contract needs `full_name`/`team`/`p_throws` and the Model 1
+feature row needs `p_throws` + `release_pos_x/z` + `release_extension` +
+`spin_axis` + `sz_top/bot` — none of which existed in the processed tables (only
+in raw Statcast). `labeled.parquet` holds raw columns + labels only; the
+engineered features are computed at train time, so the inference layer replicates
+that engineering manually (it can't reuse `engineer_features`, whose groupby
+aggregates are meaningless on one row).
+
+**Confirmed design decisions:**
+- **Missing pitch-physics features → per-pitcher medians** (Option A): extended
+  `ml/arsenal.py` to store `median_release_pos_x/z`, `median_release_extension`,
+  `median_spin_axis` per (pitcher, season, pitch_type). `sz_top`/`sz_bot` are
+  batter-driven (no pitcher-level value) → single league-median constants in
+  `api/predict.py`. `inning_top` is unknown from the request → left NaN for the
+  fitted median imputer.
+- **New `pitchers.parquet`** (name/team/handedness) built in the same arsenal pass.
+- **`updated_state` uses real baseball logic** (strike 3 → strikeout, ball 4 →
+  walk, in-play resolves on the BIP prediction); runner advancement is simplified
+  (documented, spec §10). Fixed the internally-inconsistent §6 example to match.
+- **SHAP explainer built with no background dataset** (the validated <200ms
+  `tree_path_dependent` path). Only Model 1 is explained (the pitch outcome).
+- **Season rule:** each pitcher's latest season in the arsenal, applied
+  consistently across all lookups.
+- **Error codes:** unknown pitcher → 404; pitch_type not in arsenal → 422.
+- **Contract version bumped to 0.2.0** (defined `updated_state` semantics).
+
+**Files created / edited and their roles / edits:**
+
+| File | Role | Edit made |
+|---|---|---|
+| `ml/arsenal.py` | Precompute lookup tables. | Added 4 release/spin `median_*` columns to `build_arsenal_table`; new `build_pitchers_table` (name/team/p_throws) + `load_pitchers`; `save_tables` now writes `pitchers.parquet`. Re-ran the pipeline. |
+| `api/schemas.py` | Pydantic models. | Added `PitchersResponse`, `ArsenalResponse`, `UsageResponse` wrappers (additive; frozen `/predict` models untouched). |
+| `api/predict.py` | Inference chain. | Implemented `load_artifacts` (loads 3 joblib + 4 parquet, builds the SHAP explainer), `_build_feature_row` (assembles the 32 numeric + 3 categorical features from request + lookups), `_statcast_zone`, `run_inference` (2-model chain + SHAP + usage + state), `_map_shap_factors` (transformed→raw name/value), `_compute_updated_state`. |
+| `api/main.py` | App + endpoints. | `lifespan` loads the bundle into `app.state`; implemented `/health`, `/pitchers`, `/pitchers/{id}/arsenal`, `/pitchers/{id}/usage`, `/predict` with 404/422 handling; version 0.2.0. |
+| `api/tests/test_predict.py` | API tests. | Un-skipped the 5 stubs; module-scoped `client` fixture (triggers lifespan); added `/health`, `/pitchers`, `/arsenal`, `/usage`, and unknown-pitcher-404 tests. |
+| `api/Dockerfile` *(new)* | Container image. | slim Python + libgomp1, installs requirements, copies `api/`/`ml/`/artifacts/processed parquets, runs uvicorn. |
+| `.dockerignore` *(new)* | Build context. | Excludes `data/raw/`, notebooks, venv, caches so the image stays lean. |
+
+**Verified:** `pytest` 29 passed; `TestClient` boots via lifespan and `/health`
+returns `{"status":"ok","model_loaded":true,"version":"0.2.0"}`; the §6 example
+request returns a valid `PredictResponse` (probabilities sum to 1.0). Docker:
+`docker build -f api/Dockerfile -t pitch-sim-api .` succeeds (image 3.65GB) and
+the running container answers `/health`, `/predict`, `/pitchers`, `/arsenal`,
+`/usage` correctly, including 404 on an unknown pitcher. (Required a WSL2 kernel
+update — `wsl --update` — before Docker Desktop's engine would start.)
+
+---
+
+*Last updated: Phase 4 — Backend API complete — 2026-07-02*

@@ -1,0 +1,12 @@
+# Keep the build context small: raw data and dev-only paths are not needed at runtime.
+data/raw/
+notebooks/
+frontend/
+.venv/
+.git/
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.ruff_cache/
+ml/tests/
+api/tests/
